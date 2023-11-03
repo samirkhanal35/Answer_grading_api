@@ -1,7 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from scraper import  scrape
 fullmarks = 5
 import re
