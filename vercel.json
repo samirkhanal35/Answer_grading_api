@@ -1,14 +1,14 @@
 {
     "builds": [
         {
-            "src": "main.py",
+            "src": "Answer_grading_api/main.py",
             "use": "@vercel/python"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "main.py"
+            "dest": "Answer_grading_api/main.py"
         }
     ]
 }
