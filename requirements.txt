@@ -1,9 +1,0 @@
-Flask
-Pandas
-Numpy
-re
-nltk
-tensorflow_hub
-requests
-bs4
-sentence_transformers
