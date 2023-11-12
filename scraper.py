@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-def scrape(question: str)-> list:
+
+def scrape(question: str) -> list:
     # removing question mark from the text
     txt = question.split('?')
 
@@ -9,10 +10,10 @@ def scrape(question: str)-> list:
     tmp_search_txt = ''
     for each in txt:
         if each:
-            tmp_search_txt+= each 
+            tmp_search_txt += each
     search_txt = ''
     for each in tmp_search_txt.split():
-        search_txt+=each+'+'
+        search_txt += each+'+'
     search_txt = search_txt[:-1]
 
     # Urls
