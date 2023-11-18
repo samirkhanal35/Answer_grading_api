@@ -11,7 +11,9 @@ api = Api(app)
 # Create a simple data store for questions and answers
 data_store = {
     'question': '',
-    'answer': ''
+    'answer': '',
+    'fullmarks': 0,
+    'context': ''
 }
 
 parser = reqparse.RequestParser()
@@ -21,21 +23,21 @@ parser.add_argument('question')
 parser.add_argument('answer')
 
 
-# Returns the marks 
+# Returns the marks
 class Grader_(Resource):
     def get(self):
         data = request.get_json()
         data_store['question'] = data.get('question', '')
         data_store['answer'] = data.get('answer', '')
-        marks = get_marks(data_store['question'], data_store['answer'])
+        data_store['context'] = data.get('context', '')
+        data_store['fullmarks'] = data.get('fullmarks', '')
+        marks = get_marks(data_store['question'], data_store['answer'],
+                          data_store['context'], data_store['fullmarks'])
         return {'marks': marks}
 
-    
 
-
-## Api resource routing 
+# Api resource routing
 api.add_resource(Grader_, '/')
-
 
 
 if __name__ == '__main__':

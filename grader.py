@@ -13,7 +13,7 @@ import numpy as np
 from scraper import scrape
 
 # Setting the fullmarks as 5
-fullmarks = 5
+# fullmarks = 5
 
 # nltk.download('punkt')
 # nltk.download('wordnet')
@@ -67,9 +67,10 @@ def calculate_relevance(desired_answer: str, student_answer: str):
 # main function
 
 
-def get_marks(question: str, answer: str):
+def get_marks(question: str, answer: str, context: str, fullmarks: int):
     ''' Returns the average marks '''
     reference_answers = scrape(question)
+    reference_answers.append(context)
     marks = []
     if reference_answers:
         for each_answer in reference_answers:
