@@ -1,5 +1,5 @@
 # import required libraries
-from sentence_transformers import SentenceTransformer
+# from sentence_transformers import SentenceTransformer
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 import tensorflow_hub as hub
@@ -43,7 +43,9 @@ def preprocess_text(text):
 
 
 # Importing the tokenizer
-model = SentenceTransformer('bert-base-nli-mean-tokens')
+# print('0---Startef000000')
+# model = SentenceTransformer('bert-base-nli-mean-tokens')
+# print('0---Stop---------------')
 
 # Calculate cosine similarity
 
@@ -52,9 +54,7 @@ def cosine(u, v):
     return np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v))
 
 # calculate the relevance
-
-
-def calculate_relevance(desired_answer: str, student_answer: str):
+def calculate_relevance(model, desired_answer: str, student_answer: str):
     desired_answer = preprocess_text(desired_answer)
     student_answer = preprocess_text(student_answer)
     # print("preprocessed desired answer: ", desired_answer)
@@ -64,16 +64,27 @@ def calculate_relevance(desired_answer: str, student_answer: str):
                         model.encode(student_answer))
     return similarity
 
+# def calculate_relevance(desired_answer: str, student_answer: str):
+#     desired_answer = preprocess_text(desired_answer)
+#     student_answer = preprocess_text(student_answer)
+#     # print("preprocessed desired answer: ", desired_answer)
+#
+#     # compute cosine similarity between desired_answer and student_answer texts
+#     similarity = cosine(model.encode(desired_answer),
+#                         model.encode(student_answer))
+#     return similarity
+
 # main function
 
 
-def get_marks(question: str, answer: str, context: str, fullmarks: int):
+def get_marks(question: str, answer: str, context: str, fullmarks: int, model):
     ''' Returns the average marks '''
     reference_answers = scrape(question)
     reference_answers.append(context)
     marks = []
+    print("Scripted_________________________")
     if reference_answers:
         for each_answer in reference_answers:
-            tmpmrk = calculate_relevance(each_answer, answer)
+            tmpmrk = calculate_relevance(model, each_answer, answer)
             marks.append(round(tmpmrk*fullmarks))
     return ((sum(marks)/len(marks)))

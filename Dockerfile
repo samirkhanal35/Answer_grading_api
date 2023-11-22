@@ -1,19 +1,26 @@
-FROM python:3.9.12
+FROM ubuntu:22.04
+MAINTAINER basisushil@gmail.com
 
-ENV WORKDIR=/Answer_grading_api
-ENV PATH=$PATH:$WORKDIR/ans/bin
-WORKDIR $WORKDIR
-ENV PATH=$PATH:/ans/bin
+RUN apt-get update -y
+RUN apt-get install python3-pip -y
+RUN apt-get install gunicorn3 -y
 
-COPY /*.py $WORKDIR/
-COPY main.py requirements.txt $WORKDIR/
 
-# Create environment
-RUN python -m venv ans &&\ 
-    chmod -R 755 $WORKDIR/ &&\
-    ans/bin/activate &&\
-    ans/bin/pip install --upgrade pip &&\
-    ans/bin/pip install --no-cache-dir --upgrade -r requirements.txt && \
-    ans/bin/python -m nltk.downloader stopwords
+COPY requirements.txt requirements.txt
+COPY . /opt/
 
-CMD uvicorn main:app --host 0.0.0.0 --port 80
+ENV EMBEDDER_MODEL="bert-base-nli-mean-tokens"
+
+RUN pip3 install -r requirements.txt
+RUN python3 -m nltk.downloader stopwords
+RUN python3 -m nltk.downloader punkt
+RUN python3 -m nltk.downloader wordnet
+RUN python3 -c 'from sentence_transformers import SentenceTransformer; import os; os.environ["EMBEDDER_MODEL"] = "bert-base-nli-mean-tokens"; model = SentenceTransformer(os.environ["EMBEDDER_MODEL"])'
+
+
+#RUN python3 -c 'from sentence_transformers import SentenceTransformer; model = SentenceTransformer("bert-base-nli-mean-tokens")'
+
+WORKDIR /opt/
+
+
+CMD ["gunicorn3", "-b", "0.0.0.0:8000", "main:app", "--workers=5"]

@@ -27,6 +27,7 @@ def scrape(question: str) -> list:
 
     for e_url in urls:
         try:
+            print(e_url)
             # Send an HTTP GET request to the URL
             response = requests.get(e_url)
 
