@@ -1,26 +1,25 @@
-FROM ubuntu:22.04
+
+FROM python:3.9.6
 MAINTAINER basisushil@gmail.com
 
-RUN apt-get update -y
-RUN apt-get install python3-pip -y
-RUN apt-get install gunicorn3 -y
+WORKDIR /opt/
+ENV DOCKER_DEFAULT_PLATFORM=linux/amd64
 
-
-COPY requirements.txt requirements.txt
-COPY . /opt/
+COPY *.py .
+COPY requirements.txt ./requirements.txt
 
 ENV EMBEDDER_MODEL="bert-base-nli-mean-tokens"
 
-RUN pip3 install -r requirements.txt
-RUN python3 -m nltk.downloader stopwords
-RUN python3 -m nltk.downloader punkt
-RUN python3 -m nltk.downloader wordnet
-RUN python3 -c 'from sentence_transformers import SentenceTransformer; import os; os.environ["EMBEDDER_MODEL"] = "bert-base-nli-mean-tokens"; model = SentenceTransformer(os.environ["EMBEDDER_MODEL"])'
-
+RUN apt-get update -y && \
+    python -m venv ./venv &&\
+    chmod -R 755 . &&\
+    ./venv/bin/activate &&\
+    ./venv/bin/pip install -r requirements.txt &&\
+    ./venv/bin/python -m nltk.downloader stopwords &&\
+    ./venv/bin/python -m nltk.downloader punkt &&\
+    ./venv/bin/python -m nltk.downloader wordnet &&\
+    ./venv/bin/python -c 'from sentence_transformers import SentenceTransformer; import os; os.environ["EMBEDDER_MODEL"] = "bert-base-nli-mean-tokens"; model = SentenceTransformer(os.environ["EMBEDDER_MODEL"])'
 
 #RUN python3 -c 'from sentence_transformers import SentenceTransformer; model = SentenceTransformer("bert-base-nli-mean-tokens")'
 
-WORKDIR /opt/
-
-
-CMD ["gunicorn3", "-b", "0.0.0.0:8000", "main:app", "--workers=5"]
+CMD ./venv/bin/gunicorn -b 0.0.0.0:8000 main:app --workers=5
